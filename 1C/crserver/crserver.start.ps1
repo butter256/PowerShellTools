@@ -14,6 +14,8 @@ param (
     [string] $pas
 )
 
+[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8")
+
 function Get-ServiceForName {
     [CmdletBinding()]
     param (
@@ -31,11 +33,23 @@ function Get-ServiceForName {
     $service
 }
 
+function ConvertTo-Windows1251 (){
+    Begin{
+        $encFrom = [System.Text.Encoding]::GetEncoding("UTF-8")
+        $encTo = [System.Text.Encoding]::GetEncoding("Windows-1251")
+    }
+    Process{
+        $bytes = $encTo.GetBytes($_)
+        $bytes = [System.Text.Encoding]::Convert($encFrom, $encTo, $bytes)
+        $encTo.GetString($bytes)
+    }
+}
+
 $command = "C:\Program files\1cv8\$ver\bin\crserver.exe" 
 
 if(-not (Get-Item $command))
 {
-    Write-Error "Хранилище не установлено($command)"
+    "РҐСЂР°РЅРёР»РёС‰Рµ РєРѕРЅС„РёРіСѓСЂР°С†РёР№ РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ($command)" | ConvertTo-Windows1251 | Write-Error
     return
 }
 
@@ -53,8 +67,8 @@ if ($null -eq $service){
 Start-Sleep -Seconds 1
 
 if ($null -eq $service){
-    Write-Error "Не удалось создать службу $service_name"
+    "РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ СЃР»СѓР¶Р±Сѓ С…СЂР°РЅРёР»РёС‰Р° РєРѕРЅС„РёРіСѓСЂР°С†РёР№ $service_name" | ConvertTo-Windows1251 | Write-Error 
 }else{
     Start-Process $command -ArgumentList "-start" -NoNewWindow -Wait  
-    Write-Host "Служба хранилища $service_name запущена"
+    "РЎР»СѓР¶Р±Р° С…СЂР°РЅРёР»РёС‰Р° РєРѕРЅС„РёРіСѓСЂР°С†РёР№ $service_name СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅР°" | ConvertTo-Windows1251 | Write-Host
 }
