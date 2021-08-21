@@ -14,8 +14,6 @@ param (
     [string] $pas
 )
 
-[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("UTF-8")
-
 function Get-ServiceForName {
     [CmdletBinding()]
     param (
@@ -33,23 +31,11 @@ function Get-ServiceForName {
     $service
 }
 
-function ConvertTo-Windows1251 (){
-    Begin{
-        $encFrom = [System.Text.Encoding]::GetEncoding("UTF-8")
-        $encTo = [System.Text.Encoding]::GetEncoding("Windows-1251")
-    }
-    Process{
-        $bytes = $encTo.GetBytes($_)
-        $bytes = [System.Text.Encoding]::Convert($encFrom, $encTo, $bytes)
-        $encTo.GetString($bytes)
-    }
-}
-
 $command = "C:\Program files\1cv8\$ver\bin\crserver.exe" 
 
 if(-not (Get-Item $command))
 {
-    "Хранилище конфигураций не установлено($command)" | ConvertTo-Windows1251 | Write-Error
+    "$command not installed" | ConvertTo-Windows1251 | Write-Error
     return
 }
 
@@ -67,8 +53,8 @@ if ($null -eq $service){
 Start-Sleep -Seconds 1
 
 if ($null -eq $service){
-    "Не удалось создать службу хранилища конфигураций $service_name" | ConvertTo-Windows1251 | Write-Error 
+    "Failed to create a service $service_name" | Write-Error 
 }else{
     Start-Process $command -ArgumentList "-start" -NoNewWindow -Wait  
-    "Служба хранилища конфигураций $service_name успешно создана" | ConvertTo-Windows1251 | Write-Host
+    "The service $service_name has been started" | Write-Host
 }
