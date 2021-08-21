@@ -1,12 +1,16 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory)]
-    [string] $version,
+    [Alias('v')]
+    [string] $ver,
     [Parameter(Mandatory)]
+    [Alias('r')]
     [string] $repo,
     [Parameter(Mandatory)]
+    [Alias('u')]
     [string] $usr,
     [Parameter(Mandatory)]
+    [Alias('p')]
     [string] $pas
 )
 
@@ -27,7 +31,7 @@ function Get-ServiceForName {
     $service
 }
 
-$command = "C:\Program files\1cv8\$version\bin\crserver.exe" 
+$command = "C:\Program files\1cv8\$ver\bin\crserver.exe" 
 
 if(-not (Get-Item $command))
 {
